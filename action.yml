@@ -1,0 +1,52 @@
+name: 'dbt-docs-to-notion'
+description: 'Exports dbt model docs to a Notion database'
+branding:
+  icon: 'book-open'
+  color: 'orange'
+inputs:
+  dbt-package:
+    description: 'dbt-bigquery, dbt-postgres, dbt-bigquery==1.0.0, etc.'
+    required: true
+  dbt-profile-path:
+    description: 'where profile.yml lives'
+    required: false
+    default: './'
+  dbt-target:
+    description: 'profile target to use for dbt docs generation'
+    required: true
+  model-records-to-write:
+    description: \"all\" or \"model_name_1 model_name_2 ...\"
+    required: false
+    default: "all"
+  notion-database-name:
+    description: 'what to name the Notion database of dbt models'
+    required: true
+  notion-parent-id:
+    description: 'Notion page where database of dbt models will be added'
+    required: true
+  notion-token:
+    description: 'Notion token api for integration to use (pass using secrets)'
+    required: true
+runs:
+  using: 'composite'
+  steps: 
+    - name: Install Python
+      uses: "actions/setup-python@v2"
+      with:
+          python-version: "3.7"
+    - name: Install dbt
+      run: "pip3 install ${{ inputs.dbt-package }}"
+      shell: bash
+    - name: Load dbt deps
+      run: "dbt deps --profiles-dir ${{ inputs.dbt-profile-path }} --target=${{ inputs.dbt-target }}"
+      shell: "bash"
+    - name: Generate dbt Docs
+      run: "dbt docs generate --profiles-dir ${{ inputs.dbt-profile-path }} --target=${{ inputs.dbt-target }}"
+      shell: bash
+    - name: Export dbt Docs to Notion
+      run: "python3 ./.github/actions/dbt-docs-to-notion/dbt_docs_to_notion.py ${{ inputs.model-records-to-write }}"
+      shell: bash
+      env:
+        DATABASE_NAME: ${{ inputs.notion-database-name }}
+        DATABASE_PARENT_ID: ${{ inputs.notion-parent-id }}
+        NOTION_TOKEN: ${{ inputs.notion-token }}
