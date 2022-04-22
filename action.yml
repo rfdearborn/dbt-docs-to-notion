@@ -1,5 +1,5 @@
 name: 'dbt-docs-to-notion'
-description: 'Exports dbt docs to a notion database'
+description: 'Exports dbt model docs to a Notion database'
 branding:
   icon: 'book-open'
   color: 'orange'
@@ -19,13 +19,13 @@ inputs:
     required: false
     default: "all"
   notion-database-name:
-    description: 'what to name the notion database of dbt models'
+    description: 'what to name the Notion database of dbt models'
     required: true
   notion-parent-id:
-    description: 'notion page where database of dbt models will be added'
+    description: 'Notion page where database of dbt models will be added'
     required: true
   notion-token:
-    description: 'notion token api for integration to use (pass using secrets)'
+    description: 'Notion token api for integration to use (pass using secrets)'
     required: true
 runs:
   using: 'composite'
