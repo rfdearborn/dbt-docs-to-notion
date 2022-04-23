@@ -43,8 +43,8 @@ def main():
   catalog_nodes = catalog['nodes']
 
   models = {node_name: data
-        for (node_name, data)
-        in manifest_nodes.items() if data['resource_type'] == 'model'}
+            for (node_name, data)
+            in manifest_nodes.items() if data['resource_type'] == 'model'}
 
   ###### create database if not exists ######
   children_query_resp = make_request(
@@ -56,7 +56,7 @@ def main():
   database_id = ''
   for child in children_query_resp['results']:
     if('child_database' in child
-    and child['child_database'] == {'title': DATABASE_NAME}):
+        and child['child_database'] == {'title': DATABASE_NAME}):
       database_id = child['id']
       break
 
@@ -124,8 +124,8 @@ def main():
     if model_records_to_write == ['all'] or model_name in model_records_to_write:
       # form record object
       column_descriptions = {name: metadata['description']
-                  for name, metadata
-                  in data['columns'].items()}
+                            for name, metadata
+                            in data['columns'].items()}
 
       columns_table_children_obj = [
         {
