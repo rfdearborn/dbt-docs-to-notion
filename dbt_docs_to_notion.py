@@ -34,11 +34,11 @@ def main():
   print('Model records to write: %s' % model_records_to_write)
 
   ###### load nodes from dbt docs ######
-  f = open('target/manifest.json')
+  f = open('target/manifest.json', encoding='utf-8')
   manifest = json.load(f)
   manifest_nodes = manifest['nodes']
 
-  f = open('target/catalog.json')
+  f = open('target/catalog.json', encoding='utf-8')
   catalog = json.load(f)
   catalog_nodes = catalog['nodes']
 
@@ -433,7 +433,7 @@ def main():
       if record_query_resp['results']:
         print('\nupdating %s record' % model_name)
         record_id = record_query_resp['results'][0]['id']
-        record_update_resp = make_request(
+        _record_update_resp = make_request(
           endpoint='pages/%s' % record_id, 
           querystring='', 
           method='PATCH', 
@@ -448,13 +448,13 @@ def main():
         )
         for record_child in record_children_resp['results']:
           record_child_id = record_child['id']
-          record_child_deletion_resp = make_request(
+          _record_child_deletion_resp = make_request(
             endpoint='blocks/', 
             querystring=record_child_id, 
             method='DELETE'
           )
 
-        record_children_replacement_resp = make_request(
+        _record_children_replacement_resp = make_request(
           endpoint='blocks/', 
           querystring='%s/children' % record_id, 
           method='PATCH',
@@ -464,7 +464,7 @@ def main():
       else:
         print('\ncreating %s record' % model_name)
         record_obj['children'] = record_children_obj
-        record_creation_resp = make_request(
+        _record_creation_resp = make_request(
           endpoint='pages/', 
           querystring='', 
           method='POST', 
