@@ -18,20 +18,19 @@ def make_request(endpoint, querystring='', method='GET', **request_kwargs):
     'Content-Type': 'application/json',
     'Notion-Version': '2022-02-22'
   }
-  url = 'https://api.notion.com/v1/%s%s' % (endpoint, querystring)
+  url = f'https://api.notion.com/v1/{endpoint}{querystring}'
   resp = requests.request(method, url, headers=headers, **request_kwargs)
 
   if not resp.status_code == 200:
     raise Exception(
-      "Request returned status code %d\nResponse text: %s"
-      % (resp.status_code, resp.text)
+      f"Request returned status code {resp.status_code}\nResponse text: {resp.text}"
     )
 
   return resp.json()
 
 def main():
   model_records_to_write = sys.argv[1:] # 'all' or list of model names
-  print('Model records to write: %s' % model_records_to_write)
+  print(f'Model records to write: {model_records_to_write}')
 
   ###### load nodes from dbt docs ######
   f = open('target/manifest.json', encoding='utf-8')
@@ -49,7 +48,7 @@ def main():
   ###### create database if not exists ######
   children_query_resp = make_request(
     endpoint='blocks/',
-    querystring='%s/children' % DATABASE_PARENT_ID,
+    querystring=f'{DATABASE_PARENT_ID}/children',
     method='GET'
   )
 
@@ -61,7 +60,7 @@ def main():
       break
 
   if database_id:
-    print('database %s already exists, proceeding to update records!' % database_id)
+    print(f'database {database_id} already exists, proceeding to update records!')
   else:
     database_obj = {
       "title": [
@@ -117,7 +116,7 @@ def main():
       json=database_obj
     )
     database_id = database_creation_resp['id']
-    print('\ncreated database %s, proceeding to create records!' % database_id)
+    print(f'\ncreated database {database_id}, proceeding to create records!')
 
   ##### create / update database records #####
   for model_name, data in sorted(list(models.items()), reverse=True):
@@ -420,16 +419,16 @@ def main():
       }
       record_query_resp = make_request(
         endpoint='databases/',
-        querystring='%s/query' % database_id,
+        querystring=f'{database_id}/query',
         method='POST',
         json=query_obj
       )
 
       if record_query_resp['results']:
-        print('\nupdating %s record' % model_name)
+        print(f'\nupdating {model_name} record')
         record_id = record_query_resp['results'][0]['id']
         _record_update_resp = make_request(
-          endpoint='pages/%s' % record_id,
+          endpoint=f'pages/{record_id}',
           querystring='',
           method='PATCH',
           json=record_obj
@@ -438,7 +437,7 @@ def main():
         # children can't be updated via record update, so we'll delete and re-add
         record_children_resp = make_request(
           endpoint='blocks/',
-          querystring='%s/children' % record_id,
+          querystring=f'{record_id}/children',
           method='GET'
         )
         for record_child in record_children_resp['results']:
@@ -451,13 +450,13 @@ def main():
 
         _record_children_replacement_resp = make_request(
           endpoint='blocks/',
-          querystring='%s/children' % record_id,
+          querystring=f'{record_id}/children',
           method='PATCH',
           json={"children": record_children_obj}
         )
 
       else:
-        print('\ncreating %s record' % model_name)
+        print(f'\ncreating {model_name} record')
         record_obj['children'] = record_children_obj
         _record_creation_resp = make_request(
           endpoint='pages/',
