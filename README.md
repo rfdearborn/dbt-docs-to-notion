@@ -4,7 +4,7 @@ A Github action for exporting dbt model docs to a Notion database, where they ca
 
 ## Output
 
-A Notion database, within a page of your choosing, with records like this:
+A Notion database, within a parent page of your choosing, with records like this:
 ![dbt docs to notion output](https://i.imgur.com/Y1EWj9l.png)
 
 ## Usage
@@ -61,3 +61,8 @@ jobs:
           notion-parent-id: '604ece5b9dca4cdda449abeabef759e8'
           notion-token: '${{ secrets.DBT_DOCS_TO_NOTION_TOKEN }}'
 ```
+
+## Todo
+
+- Tests
+- Visualize models graph
