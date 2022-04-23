@@ -23,13 +23,13 @@ def make_request(endpoint, querystring='', method='GET', **request_kwargs):
 
   if not resp.status_code == 200:
     raise Exception(
-      "Request returned status code %d\nResponse text: %s" 
+      "Request returned status code %d\nResponse text: %s"
       % (resp.status_code, resp.text)
     )
 
   return resp.json()
 
-def main():	
+def main():
   model_records_to_write = sys.argv[1:] # 'all' or list of model names
   print('Model records to write: %s' % model_records_to_write)
 
@@ -42,14 +42,14 @@ def main():
   catalog = json.load(f)
   catalog_nodes = catalog['nodes']
 
-  models = {node_name: data 
-        for (node_name, data) 
+  models = {node_name: data
+        for (node_name, data)
         in manifest_nodes.items() if data['resource_type'] == 'model'}
-  
+
   ###### create database if not exists ######
   children_query_resp = make_request(
-    endpoint='blocks/', 
-    querystring='%s/children' % DATABASE_PARENT_ID, 
+    endpoint='blocks/',
+    querystring='%s/children' % DATABASE_PARENT_ID,
     method='GET'
   )
 
@@ -62,7 +62,7 @@ def main():
 
   if database_id:
     print('database %s already exists, proceeding to update records!' % database_id)
-  else: 
+  else:
     database_obj = {
       "title": [
         {
@@ -89,12 +89,12 @@ def main():
         },
         "Relation": {
           "rich_text": {}
-        }, 
+        },
         "Approx Rows": {
           "number": {
             "format": "number_with_commas"
           }
-        }, 
+        },
         "Approx GB": {
           "number": {
             "format": "number_with_commas"
@@ -108,12 +108,12 @@ def main():
         }
       }
     }
-    
+
     print('created creating database')
     database_creation_resp = make_request(
-      endpoint='databases/', 
-      querystring='', 
-      method='POST', 
+      endpoint='databases/',
+      querystring='',
+      method='POST',
       json=database_obj
     )
     database_id = database_creation_resp['id']
@@ -126,7 +126,7 @@ def main():
       column_descriptions = {name: metadata['description']
                   for name, metadata
                   in data['columns'].items()}
-      
+
       columns_table_children_obj = [
         {
           "type": "table_row",
@@ -193,13 +193,13 @@ def main():
                     "type": "text",
                     "text": {
                       "content": (
-                        column_descriptions[col_name] 
+                        column_descriptions[col_name]
                         if col_name in column_descriptions
                         else ''
                       )
                     },
                     "plain_text": (
-                      column_descriptions[col_name] 
+                      column_descriptions[col_name]
                       if col_name in column_descriptions
                       else ''
                     )
@@ -263,9 +263,9 @@ def main():
           "type": "heading_1",
           "heading_1": {
             "rich_text": [
-              { 
-                "type": "text", 
-                "text": { "content": "Columns" } 
+              {
+                "type": "text",
+                "text": { "content": "Columns" }
               }
             ]
           }
@@ -286,9 +286,9 @@ def main():
           "type": "heading_1",
           "heading_1": {
             "rich_text": [
-              { 
-                "type": "text", 
-                "text": { "content": "Raw SQL" } 
+              {
+                "type": "text",
+                "text": { "content": "Raw SQL" }
               }
             ]
           }
@@ -314,9 +314,9 @@ def main():
           "type": "heading_1",
           "heading_1": {
             "rich_text": [
-              { 
-                "type": "text", 
-                "text": { "content": "Compiled SQL" } 
+              {
+                "type": "text",
+                "text": { "content": "Compiled SQL" }
               }
             ]
           }
@@ -374,7 +374,7 @@ def main():
 
               }
             ]
-          }, 
+          },
           "Relation": {
             "rich_text": [
               {
@@ -384,10 +384,10 @@ def main():
 
               }
             ]
-          }, 
+          },
           "Approx Rows": {
             "number": catalog_nodes[model_name]['stats']['num_rows']['value']
-          }, 
+          },
           "Approx GB": {
             "number": catalog_nodes[model_name]['stats']['num_bytes']['value']/1e9
           },
@@ -413,7 +413,7 @@ def main():
           }
         }
       }
-      
+
       ###### query to see if record already exists ######
       query_obj = {
         "filter": {
@@ -424,50 +424,50 @@ def main():
         }
       }
       record_query_resp = make_request(
-        endpoint='databases/', 
-        querystring='%s/query' % database_id, 
-        method='POST', 
+        endpoint='databases/',
+        querystring='%s/query' % database_id,
+        method='POST',
         json=query_obj
       )
-      
+
       if record_query_resp['results']:
         print('\nupdating %s record' % model_name)
         record_id = record_query_resp['results'][0]['id']
         _record_update_resp = make_request(
-          endpoint='pages/%s' % record_id, 
-          querystring='', 
-          method='PATCH', 
+          endpoint='pages/%s' % record_id,
+          querystring='',
+          method='PATCH',
           json=record_obj
         )
-        
+
         # children can't be updated via record update, so we'll delete and re-add
         record_children_resp = make_request(
-          endpoint='blocks/', 
-          querystring='%s/children' % record_id, 
+          endpoint='blocks/',
+          querystring='%s/children' % record_id,
           method='GET'
         )
         for record_child in record_children_resp['results']:
           record_child_id = record_child['id']
           _record_child_deletion_resp = make_request(
-            endpoint='blocks/', 
-            querystring=record_child_id, 
+            endpoint='blocks/',
+            querystring=record_child_id,
             method='DELETE'
           )
 
         _record_children_replacement_resp = make_request(
-          endpoint='blocks/', 
-          querystring='%s/children' % record_id, 
+          endpoint='blocks/',
+          querystring='%s/children' % record_id,
           method='PATCH',
           json={"children": record_children_obj}
-        )		
+        )
 
       else:
         print('\ncreating %s record' % model_name)
         record_obj['children'] = record_children_obj
         _record_creation_resp = make_request(
-          endpoint='pages/', 
-          querystring='', 
-          method='POST', 
+          endpoint='pages/',
+          querystring='',
+          method='POST',
           json=record_obj
         )
 
