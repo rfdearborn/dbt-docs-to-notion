@@ -359,7 +359,6 @@ def main():
                   "content": data['description'][:2000]
                   # notion api limit is 2k characters per rich text block
                 }
-
               }
             ]
           },
@@ -371,7 +370,6 @@ def main():
                     catalog_nodes[model_name]['metadata']['owner']
                   )[:2000]
                 }
-
               }
             ]
           },
@@ -381,7 +379,6 @@ def main():
                 "text": {
                   "content": data['relation_name'][:2000]
                 }
-
               }
             ]
           },
@@ -397,7 +394,6 @@ def main():
                 "text": {
                   "content": json.dumps(data['depends_on'])[:2000]
                 }
-
               }
             ]
           },
@@ -407,7 +403,6 @@ def main():
                 "text": {
                   "content": json.dumps(data['tags'])[:2000]
                 }
-
               }
             ]
           }
