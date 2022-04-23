@@ -1,8 +1,9 @@
 import json
 import os
-import requests
 import sys
 import time
+
+import requests
 
 
 DATABASE_PARENT_ID = os.environ['DATABASE_PARENT_ID']
@@ -33,13 +34,13 @@ def main():
   print(f'Model records to write: {model_records_to_write}')
 
   ###### load nodes from dbt docs ######
-  f = open('target/manifest.json', encoding='utf-8')
-  manifest = json.load(f)
-  manifest_nodes = manifest['nodes']
+  with open('target/manifest.json', encoding='utf-8') as f:
+    manifest = json.load(f)
+    manifest_nodes = manifest['nodes']
 
-  f = open('target/catalog.json', encoding='utf-8')
-  catalog = json.load(f)
-  catalog_nodes = catalog['nodes']
+  with open('target/catalog.json', encoding='utf-8') as f:
+    catalog = json.load(f)
+    catalog_nodes = catalog['nodes']
 
   models = {node_name: data
             for (node_name, data)
