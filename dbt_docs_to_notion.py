@@ -29,6 +29,17 @@ def make_request(endpoint, querystring='', method='GET', **request_kwargs):
 
   return resp.json()
 
+
+def get_path_or_empty(parent_object, path_array, zero_value=''):
+    obj = parent_object
+    for el in path_array:
+        if el not in obj:
+            return zero_value
+        obj = obj[el]
+
+    return obj
+
+
 def main():
   model_records_to_write = sys.argv[1:] # 'all' or list of model names
   print(f'Model records to write: {model_records_to_write}')
@@ -163,7 +174,7 @@ def main():
           }
         }
       ]
-      col_names_and_data = list(catalog_nodes[model_name]['columns'].items())
+      col_names_and_data = list(get_path_or_empty(catalog_nodes, [model_name, 'columns'], {}).items())
       for (col_name, col_data) in col_names_and_data[:98]: # notion api limit is 100 table rows
         columns_table_children_obj.append(
           {
@@ -367,7 +378,7 @@ def main():
               {
                 "text": {
                   "content": str(
-                    catalog_nodes[model_name]['metadata']['owner']
+                    get_path_or_empty(catalog_nodes, [model_name, 'metadata', 'owner'], '')
                   )[:2000]
                 }
               }
@@ -383,10 +394,10 @@ def main():
             ]
           },
           "Approx Rows": {
-            "number": catalog_nodes[model_name]['stats']['num_rows']['value']
+            "number": get_path_or_empty(catalog_nodes, [model_name, 'stats', 'num_rows', 'value'], -1)
           },
           "Approx GB": {
-            "number": catalog_nodes[model_name]['stats']['num_bytes']['value']/1e9
+            "number": get_path_or_empty(catalog_nodes, [model_name, 'stats', 'num_bytes', 'value'], -1) /1e9
           },
           "Depends On": {
             "rich_text": [
