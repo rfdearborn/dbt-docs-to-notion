@@ -1,4 +1,4 @@
-name: 'dbt-docs-to-notion'
+name: 'dbt-docs-to-notion-stytch'
 description: 'Exports dbt model docs to a Notion database'
 branding:
   icon: 'book-open'
