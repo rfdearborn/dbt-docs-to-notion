@@ -47,7 +47,7 @@ def get_owner(data, catalog_nodes, model_name):
   If none present, fall back to database table owner
   """
   owner = get_path_or_empty(data, ['config', 'meta', 'owner'], None)
-  if owner != None:
+  if owner is not None:
     return owner
 
   return get_path_or_empty(catalog_nodes, [model_name, 'metadata', 'owner'], '')
