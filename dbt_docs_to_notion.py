@@ -32,6 +32,7 @@ def make_request(endpoint, querystring='', method='GET', **request_kwargs):
 
 
 def get_paths_or_empty(parent_object, paths_array, zero_value=''):
+  """Used for catalog_nodes accesses, since structure is variable"""
   for path in paths_array:
     obj = parent_object
     for el in path:
