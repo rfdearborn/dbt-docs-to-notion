@@ -215,7 +215,11 @@ def main():
           }
         }
       ]
-      col_names_and_data = list(get_path_or_empty(catalog_nodes, [model_name, 'columns'], {}).items())
+      col_names_and_data = list(get_path_or_empty(
+        catalog_nodes,
+        [model_name, 'columns'],
+        {}
+      ).items())
       for (col_name, col_data) in col_names_and_data[:98]: # notion api limit is 100 table rows
         columns_table_children_obj.append(
           {
