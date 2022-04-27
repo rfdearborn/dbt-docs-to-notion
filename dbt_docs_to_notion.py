@@ -41,6 +41,16 @@ def get_path_or_empty(parent_object, path_array, zero_value=''):
     return obj
 
 
+def get_owner(data, catalog_nodes, model_name):
+    # Check for an owner field explicitly named in the DBT Config
+    # If none present, fall back to database table owner
+    owner = get_path_or_empty(data, ['config', 'meta', 'owner'], None)
+    if owner != None:
+        return owner
+
+    return get_path_or_empty(catalog_nodes, [model_name, 'metadata', 'owner'], '')
+
+
 def get_num_rows(catalog_nodes, model_name):
     zero_value = NUMERIC_ZERO_VALUE
     keys = ['num_rows', 'row_count']
@@ -61,16 +71,6 @@ def get_bytes(catalog_nodes, model_name):
             return num_rows
 
     return NUMERIC_ZERO_VALUE
-
-
-def get_owner(data, catalog_nodes, model_name):
-    # Check for an owner field explicitly named in the DBT Config
-    # If none present, fall back to database table owner
-    owner = get_path_or_empty(data, ['config', 'meta', 'owner'], None)
-    if owner != None:
-        return owner
-
-    return get_path_or_empty(catalog_nodes, [model_name, 'metadata', 'owner'], '')
 
 
 def main():
