@@ -32,14 +32,17 @@ def make_request(endpoint, querystring='', method='GET', **request_kwargs):
 
 
 def get_paths_or_empty(parent_object, paths_array, zero_value=''):
-  obj = parent_object
   for path in paths_array:
+    obj = parent_object
     for el in path:
       if el not in obj:
-        return zero_value
+        obj = zero_value
+        break
       obj = obj[el]
+    if obj != zero_value:
+      return obj
 
-  return obj
+  return zero_value
 
 
 def get_owner(data, catalog_nodes, model_name):
@@ -134,7 +137,7 @@ def main():
       }
     }
 
-    print('created creating database')
+    print('creating database')
     database_creation_resp = make_request(
       endpoint='databases/',
       querystring='',
