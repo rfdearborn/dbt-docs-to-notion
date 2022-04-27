@@ -31,12 +31,13 @@ def make_request(endpoint, querystring='', method='GET', **request_kwargs):
   return resp.json()
 
 
-def get_path_or_empty(parent_object, path_array, zero_value=''):
+def get_paths_or_empty(parent_object, paths_array, zero_value=''):
   obj = parent_object
-  for el in path_array:
-    if el not in obj:
-      return zero_value
-    obj = obj[el]
+  for path in paths_array:
+    for el in path:
+      if el not in obj:
+        return zero_value
+      obj = obj[el]
 
   return obj
 
@@ -46,39 +47,11 @@ def get_owner(data, catalog_nodes, model_name):
   Check for an owner field explicitly named in the DBT Config
   If none present, fall back to database table owner
   """
-  owner = get_path_or_empty(data, ['config', 'meta', 'owner'], None)
+  owner = get_paths_or_empty(data, [['config', 'meta', 'owner']], None)
   if owner is not None:
     return owner
 
-  return get_path_or_empty(catalog_nodes, [model_name, 'metadata', 'owner'], '')
-
-
-def get_num_rows(catalog_nodes, model_name):
-  keys = ['num_rows', 'row_count']
-  for key in keys:
-    num_rows = get_path_or_empty(
-      catalog_nodes,
-      [model_name, 'stats', key, 'value'],
-      NUMERIC_ZERO_VALUE
-    )
-    if num_rows != NUMERIC_ZERO_VALUE:
-      return num_rows
-
-  return NUMERIC_ZERO_VALUE
-
-
-def get_bytes(catalog_nodes, model_name):
-  keys = ['num_bytes', 'bytes']
-  for key in keys:
-    num_rows = get_path_or_empty(
-      catalog_nodes,
-      [model_name, 'stats', key, 'value'],
-      NUMERIC_ZERO_VALUE
-    )
-    if num_rows != NUMERIC_ZERO_VALUE:
-      return num_rows
-
-  return NUMERIC_ZERO_VALUE
+  return get_paths_or_empty(catalog_nodes, [[model_name, 'metadata', 'owner']], '')
 
 
 def main():
@@ -215,9 +188,9 @@ def main():
           }
         }
       ]
-      col_names_and_data = list(get_path_or_empty(
+      col_names_and_data = list(get_paths_or_empty(
         catalog_nodes,
-        [model_name, 'columns'],
+        [[model_name, 'columns']],
         {}
       ).items())
       for (col_name, col_data) in col_names_and_data[:98]: # notion api limit is 100 table rows
@@ -439,10 +412,20 @@ def main():
             ]
           },
           "Approx Rows": {
-            "number": get_num_rows(catalog_nodes, model_name)
+            "number": get_paths_or_empty(
+              catalog_nodes,
+              [[model_name, 'stats', 'num_rows', 'value'],
+               [model_name, 'stats', 'row_count', 'value']],
+              NUMERIC_ZERO_VALUE
+            )
           },
           "Approx GB": {
-            "number":get_bytes(catalog_nodes, model_name) /1e9
+            "number": get_paths_or_empty(
+              catalog_nodes,
+              [[model_name, 'stats', 'bytes', 'value'],
+               [model_name, 'stats', 'num_bytes', 'value']],
+              NUMERIC_ZERO_VALUE
+            ) / 1e9
           },
           "Depends On": {
             "rich_text": [
