@@ -52,7 +52,6 @@ def get_owner(data, catalog_nodes, model_name):
 
 
 def get_num_rows(catalog_nodes, model_name):
-  zero_value = NUMERIC_ZERO_VALUE
   keys = ['num_rows', 'row_count']
   for key in keys:
     num_rows = get_path_or_empty(catalog_nodes, [model_name, 'stats', key, 'value'], NUMERIC_ZERO_VALUE)
@@ -63,7 +62,6 @@ def get_num_rows(catalog_nodes, model_name):
 
 
 def get_bytes(catalog_nodes, model_name):
-  zero_value = NUMERIC_ZERO_VALUE
   keys = ['num_bytes', 'bytes']
   for key in keys:
     num_rows = get_path_or_empty(catalog_nodes, [model_name, 'stats', key, 'value'], NUMERIC_ZERO_VALUE)
