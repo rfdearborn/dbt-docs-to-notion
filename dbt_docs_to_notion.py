@@ -9,6 +9,7 @@ import requests
 DATABASE_PARENT_ID = os.environ['DATABASE_PARENT_ID']
 DATABASE_NAME = os.environ['DATABASE_NAME']
 NOTION_TOKEN = os.environ['NOTION_TOKEN']
+NUMERIC_ZERO_VALUE = -1
 
 
 def make_request(endpoint, querystring='', method='GET', **request_kwargs):
@@ -28,6 +29,49 @@ def make_request(endpoint, querystring='', method='GET', **request_kwargs):
     )
 
   return resp.json()
+
+
+def get_path_or_empty(parent_object, path_array, zero_value=''):
+    obj = parent_object
+    for el in path_array:
+        if el not in obj:
+            return zero_value
+        obj = obj[el]
+
+    return obj
+
+
+def get_num_rows(catalog_nodes, model_name):
+    zero_value = NUMERIC_ZERO_VALUE
+    keys = ['num_rows', 'row_count']
+    for key in keys:
+        num_rows = get_path_or_empty(catalog_nodes, [model_name, 'stats', key, 'value'], NUMERIC_ZERO_VALUE)
+        if num_rows != NUMERIC_ZERO_VALUE:
+            return num_rows
+
+    return NUMERIC_ZERO_VALUE
+
+
+def get_bytes(catalog_nodes, model_name):
+    zero_value = NUMERIC_ZERO_VALUE
+    keys = ['num_bytes', 'bytes']
+    for key in keys:
+        num_rows = get_path_or_empty(catalog_nodes, [model_name, 'stats', key, 'value'], NUMERIC_ZERO_VALUE)
+        if num_rows != NUMERIC_ZERO_VALUE:
+            return num_rows
+
+    return NUMERIC_ZERO_VALUE
+
+
+def get_owner(data, catalog_nodes, model_name):
+    # Check for an owner field explicitly named in the DBT Config
+    # If none present, fall back to database table owner
+    owner = get_path_or_empty(data, ['config', 'meta', 'owner'], None)
+    if owner != None:
+        return owner
+
+    return get_path_or_empty(catalog_nodes, [model_name, 'metadata', 'owner'], '')
+
 
 def main():
   model_records_to_write = sys.argv[1:] # 'all' or list of model names
@@ -163,7 +207,7 @@ def main():
           }
         }
       ]
-      col_names_and_data = list(catalog_nodes[model_name]['columns'].items())
+      col_names_and_data = list(get_path_or_empty(catalog_nodes, [model_name, 'columns'], {}).items())
       for (col_name, col_data) in col_names_and_data[:98]: # notion api limit is 100 table rows
         columns_table_children_obj.append(
           {
@@ -367,7 +411,7 @@ def main():
               {
                 "text": {
                   "content": str(
-                    catalog_nodes[model_name]['metadata']['owner']
+                    get_owner(data, catalog_nodes, model_name)
                   )[:2000]
                 }
               }
@@ -383,10 +427,10 @@ def main():
             ]
           },
           "Approx Rows": {
-            "number": catalog_nodes[model_name]['stats']['num_rows']['value']
+            "number": get_num_rows(catalog_nodes, model_name)
           },
           "Approx GB": {
-            "number": catalog_nodes[model_name]['stats']['num_bytes']['value']/1e9
+            "number":get_bytes(catalog_nodes, model_name) /1e9
           },
           "Depends On": {
             "rich_text": [
