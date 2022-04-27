@@ -42,8 +42,10 @@ def get_path_or_empty(parent_object, path_array, zero_value=''):
 
 
 def get_owner(data, catalog_nodes, model_name):
-  # Check for an owner field explicitly named in the DBT Config
-  # If none present, fall back to database table owner
+  """
+  Check for an owner field explicitly named in the DBT Config
+  If none present, fall back to database table owner
+  """
   owner = get_path_or_empty(data, ['config', 'meta', 'owner'], None)
   if owner != None:
     return owner
