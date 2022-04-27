@@ -32,45 +32,45 @@ def make_request(endpoint, querystring='', method='GET', **request_kwargs):
 
 
 def get_path_or_empty(parent_object, path_array, zero_value=''):
-    obj = parent_object
-    for el in path_array:
-        if el not in obj:
-            return zero_value
-        obj = obj[el]
+  obj = parent_object
+  for el in path_array:
+    if el not in obj:
+      return zero_value
+    obj = obj[el]
 
-    return obj
+  return obj
 
 
 def get_owner(data, catalog_nodes, model_name):
-    # Check for an owner field explicitly named in the DBT Config
-    # If none present, fall back to database table owner
-    owner = get_path_or_empty(data, ['config', 'meta', 'owner'], None)
-    if owner != None:
-        return owner
+  # Check for an owner field explicitly named in the DBT Config
+  # If none present, fall back to database table owner
+  owner = get_path_or_empty(data, ['config', 'meta', 'owner'], None)
+  if owner != None:
+    return owner
 
-    return get_path_or_empty(catalog_nodes, [model_name, 'metadata', 'owner'], '')
+  return get_path_or_empty(catalog_nodes, [model_name, 'metadata', 'owner'], '')
 
 
 def get_num_rows(catalog_nodes, model_name):
-    zero_value = NUMERIC_ZERO_VALUE
-    keys = ['num_rows', 'row_count']
-    for key in keys:
-        num_rows = get_path_or_empty(catalog_nodes, [model_name, 'stats', key, 'value'], NUMERIC_ZERO_VALUE)
-        if num_rows != NUMERIC_ZERO_VALUE:
-            return num_rows
+  zero_value = NUMERIC_ZERO_VALUE
+  keys = ['num_rows', 'row_count']
+  for key in keys:
+    num_rows = get_path_or_empty(catalog_nodes, [model_name, 'stats', key, 'value'], NUMERIC_ZERO_VALUE)
+    if num_rows != NUMERIC_ZERO_VALUE:
+      return num_rows
 
-    return NUMERIC_ZERO_VALUE
+  return NUMERIC_ZERO_VALUE
 
 
 def get_bytes(catalog_nodes, model_name):
-    zero_value = NUMERIC_ZERO_VALUE
-    keys = ['num_bytes', 'bytes']
-    for key in keys:
-        num_rows = get_path_or_empty(catalog_nodes, [model_name, 'stats', key, 'value'], NUMERIC_ZERO_VALUE)
-        if num_rows != NUMERIC_ZERO_VALUE:
-            return num_rows
+  zero_value = NUMERIC_ZERO_VALUE
+  keys = ['num_bytes', 'bytes']
+  for key in keys:
+    num_rows = get_path_or_empty(catalog_nodes, [model_name, 'stats', key, 'value'], NUMERIC_ZERO_VALUE)
+    if num_rows != NUMERIC_ZERO_VALUE:
+      return num_rows
 
-    return NUMERIC_ZERO_VALUE
+  return NUMERIC_ZERO_VALUE
 
 
 def main():
