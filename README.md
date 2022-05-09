@@ -1,10 +1,10 @@
 # dbt-docs-to-notion
 
-A Github action for exporting dbt model docs to a Notion database, where they can be conveniently consumed (especially by casual users in your org).
+A Github action for exporting dbt docs to a Notion database, where they can be conveniently consumed (especially by casual users in your org).
 
 ## Output
 
-A Notion database, within a parent page of your choosing, with records like this:
+A Notion database, within a parent page of your choosing, with records like this for each model that contain the same information as dbt docs:
 ![dbt docs to notion output](https://i.imgur.com/Y1EWj9l.png)
 
 ## Usage
@@ -14,7 +14,12 @@ A Notion database, within a parent page of your choosing, with records like this
 In advance of using this action, you should:
 
 1. [Create a new integration within your Notion workspace](https://www.notion.so/my-integrations)
-2. Have your Notion integration token and a working dbt `profiles.yml` accessible to your repo (I'd recommend using [Github's repository secrets](https://docs.github.com/en/actions/security-guides/encrypted-secrets); see example workflow below).
+2. Create a parent Notion page for the docs database and share it with the integration from above
+3. Have your Notion integration token and a working dbt `profiles.yml` accessible to your repo (I'd recommend using [Github's repository secrets](https://docs.github.com/en/actions/security-guides/encrypted-secrets); see example workflow below).
+
+Ideally you should also write descriptions for models and columns as is a [best practice](https://docs.getdbt.com/docs/building-a-dbt-project/documentation#adding-descriptions-to-your-project).
+
+> ❗️ Note: this program assumes schema-defined model and column names to be entirely lowercase.
 
 ### Inputs
 
