@@ -227,13 +227,13 @@ def main():
                     "text": {
                       "content": (
                         column_descriptions[col_name]
-                        if col_name in column_descriptions
+                        if col_name.lower() in column_descriptions
                         else ''
                       )
                     },
                     "plain_text": (
                       column_descriptions[col_name]
-                      if col_name in column_descriptions
+                      if col_name.lower() in column_descriptions
                       else ''
                     )
                   }
