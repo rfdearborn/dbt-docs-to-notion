@@ -334,7 +334,7 @@ def main():
               {
                 "type": "text",
                 "text": {
-                  "content": data['raw_sql'][:2000]
+                  "content": data['raw_code'][:2000] if 'raw_code' in data else data['raw_sql'][:2000]
                 }
               }
             ],
@@ -362,7 +362,7 @@ def main():
               {
                 "type": "text",
                 "text": {
-                  "content": data['compiled_sql'][:2000]
+                  "content": data['compiled_code'][:2000] if 'compiled_code' in data else data['compiled_sql'][:2000]
                 }
               }
             ],
