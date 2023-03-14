@@ -39,7 +39,7 @@ runs:
       shell: bash
     - name: Load dbt deps
       run: "dbt deps --profiles-dir ${{ inputs.dbt-profile-path }} --target=${{ inputs.dbt-target }}"
-      shell: "bash"
+      shell: bash
     - name: Generate dbt Docs
       run: "dbt docs generate --profiles-dir ${{ inputs.dbt-profile-path }} --target=${{ inputs.dbt-target }}"
       shell: bash
