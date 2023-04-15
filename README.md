@@ -50,13 +50,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Create temp dbt profiles
         run: "printf %s \"$DBT_PROFILES\" > ./profiles.yml"
         env:
           DBT_PROFILES: ${{ secrets.DBT_PROFILES }}
       - name: dbt-docs-to-notion
-        uses: ./.github/actions/dbt-docs-to-notion
+        uses: rfdearborn/dbt-docs-to-notion@v1.0.8
         with:
           dbt-package: 'dbt-bigquery==1.0.0'
           dbt-profile-path: './'
