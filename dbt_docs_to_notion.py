@@ -13,7 +13,7 @@ NUMERIC_ZERO_VALUE = -1
 
 
 def make_request(endpoint, querystring='', method='GET', **request_kwargs):
-  time.sleep(0.34) # notion api limit is 3 requests per second
+  time.sleep(0.5) # notion api limit is 3 requests per second
 
   headers = {
     'Authorization': NOTION_TOKEN,
