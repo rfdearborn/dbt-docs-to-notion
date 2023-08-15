@@ -382,26 +382,16 @@ def create_record(database_id, model_name, data, records_written):
     if record_query_resp['results']:
         print(f'updating {model_name} record')
         record_id = record_query_resp['results'][0]['id']
-        try:
-            update_record(record_id, record_obj)
-            print(f'{records_written} models synced to notion')
-            records_written = records_written + 1
-        except TypeError:
-            print(f'Type error, {model_name} skipped')
-            pass
+        update_record(record_id, record_obj)
+
     else:
         print(f'creating {model_name} record')
-        try:
-            _record_creation_resp = make_request(
-                endpoint='pages/',
-                querystring='',
-                method='POST',
-                json=record_obj
-            )
-            print(f'{records_written} models synced to notion')
-        except:
-            print(f'Type error, {model_name} skipped')
-            pass
+        _record_creation_resp = make_request(
+            endpoint='pages/',
+            querystring='',
+            method='POST',
+            json=record_obj
+        )
 
 
 def main():
@@ -428,7 +418,15 @@ def main():
     records_written = 0
     for model_name, data in sorted(list(models.items()), reverse=True):
         if model_records_to_write == ['all'] or model_name in model_records_to_write:
-            create_record(database_id, model_name, data, records_written)
+            try:
+                create_record(database_id, model_name, data, records_written)
+                records_written = records_written + 1
+                print(f'{records_written} models synced to notion')
+            except:
+                print(f'Type error, {model_name} skipped')
+                pass
+
+            
 
 
 if __name__ == '__main__':
