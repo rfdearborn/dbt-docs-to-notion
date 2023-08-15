@@ -149,7 +149,7 @@ def update_record(record_id, record_obj):
     )
 
 
-def create_record(database_id, model_name, data):
+def create_record(database_id, model_name, data, records_written):
     column_descriptions = {name: metadata['description'] for name, metadata in data['columns'].items()}
     col_names_and_data = list(get_paths_or_empty(catalog_nodes, [[model_name, 'columns']], {}).items())
 
@@ -380,17 +380,28 @@ def create_record(database_id, model_name, data):
     )
 
     if record_query_resp['results']:
-        print(f'\nupdating {model_name} record')
+        print(f'updating {model_name} record')
         record_id = record_query_resp['results'][0]['id']
-        update_record(record_id, record_obj)
+        try:
+            update_record(record_id, record_obj)
+            print(f'{records_written} models synced to notion')
+            records_written = records_written + 1
+        except TypeError:
+            print(f'Type error, {model_name} skipped')
+            pass
     else:
-        print(f'\ncreating {model_name} record')
-        _record_creation_resp = make_request(
-            endpoint='pages/',
-            querystring='',
-            method='POST',
-            json=record_obj
-        )
+        print(f'creating {model_name} record')
+        try:
+            _record_creation_resp = make_request(
+                endpoint='pages/',
+                querystring='',
+                method='POST',
+                json=record_obj
+            )
+            print(f'{records_written} models synced to notion')
+        except:
+            print(f'Type error, {model_name} skipped')
+            pass
 
 
 def main():
@@ -414,9 +425,10 @@ def main():
 
     create_database()
 
+    records_written = 0
     for model_name, data in sorted(list(models.items()), reverse=True):
         if model_records_to_write == ['all'] or model_name in model_records_to_write:
-            create_record(database_id, model_name, data)
+            create_record(database_id, model_name, data, records_written)
 
 
 if __name__ == '__main__':
