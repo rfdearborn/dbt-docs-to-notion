@@ -1,4 +1,5 @@
 import os
+import datetime
 import requests
 from requests.adapters import HTTPAdapter
 from requests.exceptions import RetryError
@@ -6,12 +7,12 @@ from urllib3.util.retry import Retry
 import time
 import sys
 import json
+import re
 
 
 DATABASE_PARENT_ID = os.environ['DATABASE_PARENT_ID']
 DATABASE_NAME = os.environ['DATABASE_NAME']
 NOTION_TOKEN = os.environ['NOTION_TOKEN']
-
 
 def retry(exception, tries=10, delay=0.5, backoff=2):
     def decorator_retry(func):
@@ -106,6 +107,11 @@ def create_database():
     return database_id
 
 def update_record(record_id, record_obj):
+    current_datetime = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')
+    record_obj["properties"]["Last Updated"] = {
+        "rich_text": [{"text": {"content": current_datetime}}]
+    }
+
     _record_update_resp = make_request(
         endpoint=f'pages/{record_id}',
         querystring='',
@@ -134,7 +140,7 @@ def update_record(record_id, record_obj):
         json={"children": record_obj['children']}
     )
 
-def create_record(database_id, model_name, data, catalog_nodes):
+def create_record(database_id, model_name, data, catalog_nodes, current_datetime):
     column_descriptions = {name: metadata['description'] for name, metadata in data['columns'].items()}
     col_names_and_data = list(get_paths_or_empty(catalog_nodes, [[model_name, 'columns']], {}).items())
 
@@ -266,6 +272,31 @@ def create_record(database_id, model_name, data, catalog_nodes):
                     }
                 ],
                 "language": "sql"
+            }
+        },
+        # Last Updated
+        {
+            "object": "block",
+            "type": "heading_1",
+            "heading_1": {
+                "rich_text": [
+                    {
+                        "type": "text",
+                        "text": {"content": "Last Updated"}
+                    }
+                ]
+            }
+        },
+        {
+            "object": "block",
+            "type": "paragraph",
+            "paragraph": {
+                "rich_text": [
+                    {
+                        "type": "text",
+                        "text": {"content": current_datetime}
+                    }
+                ]
             }
         }
     ]
@@ -433,13 +464,13 @@ def main():
     # Create or update the database
     database_id = create_database()
 
+    total_model_count = len(models)
+    current_model_count = 0
     for model_name, data in sorted(models.items(), reverse=True):
-        if model_records_to_write == ['all'] or model_name in model_records_to_write:
-            #try:
+        if model_records_to_write == ['all'] or model_name in model_records_to_write or re.match(MODEL_REGEX, model_name):
             create_record(database_id, model_name, data, catalog_nodes)
-            #except TypeError:
-            #    print(f'Type error, {model_name} skipped')
-            #    pass
-
+            current_model_count = current_model_count + 1
+            print(f'{current_model_count} models processed out of { total_model_count }')
+     
 if __name__ == '__main__':
     main()
