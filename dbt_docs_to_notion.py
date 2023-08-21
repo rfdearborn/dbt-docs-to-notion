@@ -104,6 +104,7 @@ def create_database():
         )
         database_id = database_creation_resp['id']
         print(f'\ncreated database {database_id}, proceeding to create records!')
+    return database_id
 
 def update_record(record_id, record_obj):
     _record_update_resp = make_request(
@@ -399,10 +400,7 @@ def main():
     }
 
     # Create or update the database
-    create_database()
-
-    # Store database_id after its creation or retrieval
-    database_id = get_database_id()
+    database_id = create_database()
 
     for model_name, data in sorted(models.items(), reverse=True):
         if model_records_to_write == ['all'] or model_name in model_records_to_write:
