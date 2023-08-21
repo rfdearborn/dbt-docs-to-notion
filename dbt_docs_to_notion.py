@@ -41,30 +41,17 @@ def retry(exception, tries=10, delay=0.5, backoff=2):
 
     return decorator_retry
 
-
-@retry(RetryError, tries=10, delay=0.5)
+@retry(HTTPError, tries=10, delay=0.5)
 def make_request(endpoint, querystring='', method='GET', **request_kwargs):
     time.sleep(0.5)  # Rate limit: 3 requests per second
     headers = {
-        'Authorization': NOTION_TOKEN,
+        'Authorization': f'Bearer {NOTION_TOKEN}',
         'Content-Type': 'application/json',
         'Notion-Version': '2022-02-22'
     }
     url = f'https://api.notion.com/v1/{endpoint}{querystring}'
     resp = requests.request(method, url, headers=headers, **request_kwargs)
     return resp
-
-
-def get_paths_or_empty(parent_object, paths_array, zero_value=''):
-    obj = parent_object
-    for path in paths_array:
-        if isinstance(obj, dict) and path[0] in obj:
-            obj = obj[path[0]]
-        else:
-            obj = zero_value
-            break
-    return obj
-
 
 def create_database():
     children_query_resp = make_request(
@@ -118,7 +105,6 @@ def create_database():
         database_id = database_creation_resp['id']
         print(f'\ncreated database {database_id}, proceeding to create records!')
 
-
 def update_record(record_id, record_obj):
     _record_update_resp = make_request(
         endpoint=f'pages/{record_id}',
@@ -148,8 +134,7 @@ def update_record(record_id, record_obj):
         json={"children": record_obj['children']}
     )
 
-
-def create_record(database_id, model_name, data, records_written):
+def create_record(database_id, model_name, data):
     column_descriptions = {name: metadata['description'] for name, metadata in data['columns'].items()}
     col_names_and_data = list(get_paths_or_empty(catalog_nodes, [[model_name, 'columns']], {}).items())
 
@@ -413,18 +398,19 @@ def main():
         in manifest_nodes.items() if data['resource_type'] == 'model'
     }
 
+    # Create or update the database
     create_database()
 
-    for model_name, data in sorted(list(models.items()), reverse=True):
+    # Store database_id after its creation or retrieval
+    database_id = get_database_id()
+
+    for model_name, data in sorted(models.items(), reverse=True):
         if model_records_to_write == ['all'] or model_name in model_records_to_write:
             try:
                 create_record(database_id, model_name, data)
             except TypeError:
                 print(f'Type error, {model_name} skipped')
                 pass
-
-            
-
 
 if __name__ == '__main__':
     main()
