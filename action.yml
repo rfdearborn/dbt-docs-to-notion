@@ -27,11 +27,14 @@ inputs:
   notion-token:
     description: 'Notion token api for integration to use (pass using secrets)'
     required: true
-  notion-token:
-    description: 'Notion token api for integration to use (pass using secrets)'
+  model-select-method:
+    description: 'Selection method for filtering down model list Regex / List/ All'
     required: true
   model-regex:
-    description: 'Optional regex for filtering model list'
+    description: 'Optional regex for filtering model list to sync'
+    required: false
+  model-list:
+    description: 'Optional list of models to sync'
     required: false
 
 runs:
