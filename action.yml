@@ -60,3 +60,6 @@ runs:
         DATABASE_NAME: ${{ inputs.notion-database-name }}
         DATABASE_PARENT_ID: ${{ inputs.notion-parent-id }}
         NOTION_TOKEN: ${{ inputs.notion-token }}
+        MODEL_SELECT_METHOD: ${{ inputs.model-select-method }}
+        MODEL_SELECT_REGEX: ${{ inputs.model-select-regex }}
+        MODEL_SELECT_LIST: ${{ inputs.model-select-list }}
