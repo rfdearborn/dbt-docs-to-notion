@@ -60,7 +60,8 @@ def create_database():
     )
 
     database_id = ''
-    for child in children_query_resp['results']:
+    children_query_resp_json = children_query_resp.json()
+    for child in children_query_resp_json['results']:
         if 'child_database' in child and child['child_database'] == {'title': DATABASE_NAME}:
             database_id = child['id']
             break
