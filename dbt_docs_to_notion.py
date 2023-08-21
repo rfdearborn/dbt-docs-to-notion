@@ -13,7 +13,7 @@ import re
 DATABASE_PARENT_ID = os.environ['DATABASE_PARENT_ID']
 DATABASE_NAME = os.environ['DATABASE_NAME']
 NOTION_TOKEN = os.environ['NOTION_TOKEN']
-MODEL_SELECTION_METHOD = os.environ['MODEL_SELECTION_METHOD']
+MODEL_SELECT_METHOD = os.environ['MODEL_SELECT_METHOD']
 MODEL_SELECT_REGEX = os.environ['MODEL_SELECT_REGEX']
 MODEL_SELECT_LIST = os.environ['MODEL_SELECT_LIST']
 
@@ -473,7 +473,7 @@ def main():
         in manifest_nodes.items() if data['resource_type'] == 'model'
     }
 
-    sync_models_dict = models_to_write(MODEL_SELECTION_METHOD, all_models_dict, MODEL_SELECT_LIST, MODEL_SELECT_REGEX)
+    sync_models_dict = models_to_write(MODEL_SELECT_METHOD, all_models_dict, MODEL_SELECT_LIST, MODEL_SELECT_REGEX)
     
     # Create or update the database
     database_id = create_database()
