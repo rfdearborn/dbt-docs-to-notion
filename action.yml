@@ -30,10 +30,10 @@ inputs:
   model-select-method:
     description: 'Selection method for filtering down model list Regex / List/ All'
     required: true
-  model-regex:
+  model-select-regex:
     description: 'Optional regex for filtering model list to sync'
     required: false
-  model-list:
+  model-select-list:
     description: 'Optional list of models to sync'
     required: false
 
