@@ -14,6 +14,17 @@ DATABASE_PARENT_ID = os.environ['DATABASE_PARENT_ID']
 DATABASE_NAME = os.environ['DATABASE_NAME']
 NOTION_TOKEN = os.environ['NOTION_TOKEN']
 
+def models_to_write(model_select_method, all_models_dict, model_select_list = [''], model_name_regex_pattern = ''):
+    if model_select_method == 'select':
+        sync_models_dict = model_select_list
+    elif model_select_method == 'regex':
+        sync_models_dict = {
+            model_name: data for model_name, data in all_models_dict.items() if re.match(model_name_regex_pattern, model_name)
+        }
+    else:
+        sync_models_dict = all_models_dict
+    return sync_models_dict
+
 def retry(exception, tries=10, delay=0.5, backoff=2):
     def decorator_retry(func):
         def wrapper(*args, **kwargs):
@@ -108,7 +119,7 @@ def create_database():
 
 def update_record(record_id, record_obj):
     current_datetime = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')
-    record_obj["properties"]["Last Updated"] = {
+    record_obj["properties"]["Docs Last Updated"] = {
         "rich_text": [{"text": {"content": current_datetime}}]
     }
 
@@ -442,11 +453,12 @@ def get_owner(data, catalog_nodes, model_name):
   return get_paths_or_empty(catalog_nodes, [[model_name, 'metadata', 'owner']], '')
   
 def main():
-    model_records_to_write = sys.argv[1:]  # 'all' or list of model names
-    print(sys.argv[2:])
-    model_regex = sys.argv[1:]
-    print(f'Model records to write: {model_records_to_write}')
-
+    model_select_method = sys.argv[1:]  # 'all' or list of model names
+    model_select_list = sys.argv[2:]
+    model_name_regex_pattern = sys.argv[3:]
+    print(f'Model select method: {model_select_method}')
+    print(f'sys2 { model_select_list}')
+    print(f'sys3 { model_name_regex_pattern}')
     # Load nodes from dbt docs
     with open('target/manifest.json', encoding='utf-8') as f:
         manifest = json.load(f)
@@ -456,22 +468,23 @@ def main():
         catalog = json.load(f)
         catalog_nodes = catalog['nodes']
 
-    models = {
+    all_models_dict = {
         node_name: data
         for (node_name, data)
         in manifest_nodes.items() if data['resource_type'] == 'model'
     }
 
+    sync_models_dict = models_to_write(model_select_method, all_models_dict, model_select_list, model_name_regex_pattern)
+    
     # Create or update the database
     database_id = create_database()
 
-    total_model_count = len(models)
+    total_model_count = len(sync_models_dict)
     current_model_count = 0
-    for model_name, data in sorted(models.items(), reverse=True):
-        if model_records_to_write == ['all'] or model_name in model_records_to_write or re.match(model_regex, model_name):
-            create_record(database_id, model_name, data, catalog_nodes)
-            current_model_count = current_model_count + 1
-            print(f'{current_model_count} models processed out of { total_model_count }')
+    for model_name, data in sorted(sync_models_dict.items(), reverse=True):
+        create_record(database_id, model_name, data, catalog_nodes)
+        current_model_count = current_model_count + 1
+        print(f'{current_model_count} models processed out of { total_model_count }')
      
 if __name__ == '__main__':
     main()
