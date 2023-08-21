@@ -429,11 +429,11 @@ def main():
 
     for model_name, data in sorted(models.items(), reverse=True):
         if model_records_to_write == ['all'] or model_name in model_records_to_write:
-            try:
-                create_record(database_id, model_name, data, catalog_nodes)
-            except TypeError:
-                print(f'Type error, {model_name} skipped')
-                pass
+            #try:
+            create_record(database_id, model_name, data, catalog_nodes)
+            #except TypeError:
+            #    print(f'Type error, {model_name} skipped')
+            #    pass
 
 if __name__ == '__main__':
     main()
