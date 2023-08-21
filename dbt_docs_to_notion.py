@@ -357,12 +357,17 @@ def create_record(database_id, model_name, data, catalog_nodes):
             }
         }
     }
-    record_query_resp = make_request(
-        endpoint=f'databases/{database_id}/query',
-        querystring='',
-        method='POST',
-        json=query_obj
-    )
+
+    try:
+        record_query_resp = make_request(
+            endpoint=f'databases/{database_id}/query',
+            querystring='',
+            method='POST',
+            json=query_obj
+        )
+    except json.JSONDecodeError as e:
+        print(f'Skipping {model_name} due to JSON decode error:', e)
+        return  # Skip this model_name and proceed to the next one
 
     if record_query_resp['results']:
         print(f'updating {model_name} record')
