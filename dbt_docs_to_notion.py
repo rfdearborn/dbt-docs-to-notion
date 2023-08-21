@@ -379,7 +379,32 @@ def create_record(database_id, model_name, data):
             json=record_obj
         )
 
+def get_paths_or_empty(parent_object, paths_array, zero_value=''):
+  """Used for catalog_nodes accesses, since structure is variable"""
+  for path in paths_array:
+    obj = parent_object
+    for el in path:
+      if el not in obj:
+        obj = zero_value
+        break
+      obj = obj[el]
+    if obj != zero_value:
+      return obj
 
+  return zero_value
+
+
+def get_owner(data, catalog_nodes, model_name):
+  """
+  Check for an owner field explicitly named in the DBT Config
+  If none present, fall back to database table owner
+  """
+  owner = get_paths_or_empty(data, [['config', 'meta', 'owner']], None)
+  if owner is not None:
+    return owner
+
+  return get_paths_or_empty(catalog_nodes, [[model_name, 'metadata', 'owner']], '')
+  
 def main():
     model_records_to_write = sys.argv[1:]  # 'all' or list of model names
     print(f'Model records to write: {model_records_to_write}')
