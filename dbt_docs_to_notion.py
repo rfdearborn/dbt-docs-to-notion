@@ -135,7 +135,7 @@ def update_record(record_id, record_obj):
         json={"children": record_obj['children']}
     )
 
-def create_record(database_id, model_name, data):
+def create_record(database_id, model_name, data, catalog_nodes):
     column_descriptions = {name: metadata['description'] for name, metadata in data['columns'].items()}
     col_names_and_data = list(get_paths_or_empty(catalog_nodes, [[model_name, 'columns']], {}).items())
 
@@ -430,7 +430,7 @@ def main():
     for model_name, data in sorted(models.items(), reverse=True):
         if model_records_to_write == ['all'] or model_name in model_records_to_write:
             try:
-                create_record(database_id, model_name, data)
+                create_record(database_id, model_name, data, catalog_nodes)
             except TypeError:
                 print(f'Type error, {model_name} skipped')
                 pass
