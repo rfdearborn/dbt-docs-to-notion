@@ -13,13 +13,16 @@ import re
 DATABASE_PARENT_ID = os.environ['DATABASE_PARENT_ID']
 DATABASE_NAME = os.environ['DATABASE_NAME']
 NOTION_TOKEN = os.environ['NOTION_TOKEN']
+MODEL_SELECTION_METHOD = os.environ['MODEL_SELECTION_METHOD']
+MODEL_SELECT_REGEX = os.environ['MODEL_SELECT_REGEX']
+MODEL_SELECT_LIST = os.environ['MODEL_SELECT_LIST']
 
-def models_to_write(model_select_method, all_models_dict, model_select_list = [''], model_name_regex_pattern = ''):
+def models_to_write(model_select_method, all_models_dict, model_select_list = [''], MODEL_SELECT_REGEX = ''):
     if model_select_method == 'select':
         sync_models_dict = model_select_list
     elif model_select_method == 'regex':
         sync_models_dict = {
-            model_name: data for model_name, data in all_models_dict.items() if re.match(model_name_regex_pattern, model_name)
+            model_name: data for model_name, data in all_models_dict.items() if re.match(MODEL_SELECT_REGEX, model_name)
         }
     else:
         sync_models_dict = all_models_dict
@@ -453,12 +456,8 @@ def get_owner(data, catalog_nodes, model_name):
   return get_paths_or_empty(catalog_nodes, [[model_name, 'metadata', 'owner']], '')
   
 def main():
-    model_select_method = sys.argv[1:]  # 'all' or list of model names
-    model_select_list = sys.argv[2:]
-    model_name_regex_pattern = sys.argv[3:]
-    print(f'Model select method: {model_select_method}')
-    print(f'sys2 { model_select_list}')
-    print(f'sys3 { model_name_regex_pattern}')
+
+
     # Load nodes from dbt docs
     with open('target/manifest.json', encoding='utf-8') as f:
         manifest = json.load(f)
@@ -474,7 +473,7 @@ def main():
         in manifest_nodes.items() if data['resource_type'] == 'model'
     }
 
-    sync_models_dict = models_to_write(model_select_method, all_models_dict, model_select_list, model_name_regex_pattern)
+    sync_models_dict = models_to_write(MODEL_SELECTION_METHOD, all_models_dict, MODEL_SELECT_LIST, MODEL_SELECT_REGEX)
     
     # Create or update the database
     database_id = create_database()
