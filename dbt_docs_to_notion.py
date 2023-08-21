@@ -415,14 +415,11 @@ def main():
 
     create_database()
 
-    records_written = 0
     for model_name, data in sorted(list(models.items()), reverse=True):
         if model_records_to_write == ['all'] or model_name in model_records_to_write:
             try:
-                create_record(database_id, model_name, data, records_written)
-                records_written = records_written + 1
-                print(f'{records_written} models synced to notion')
-            except:
+                create_record(database_id, model_name, data)
+            except TypeError:
                 print(f'Type error, {model_name} skipped')
                 pass
 
