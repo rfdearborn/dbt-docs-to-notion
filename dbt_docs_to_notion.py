@@ -50,7 +50,7 @@ def make_request(endpoint, querystring='', method='GET', **request_kwargs):
     }
     url = f'https://api.notion.com/v1/{endpoint}{querystring}'
     resp = requests.request(method, url, headers=headers, **request_kwargs)
-    return resp
+    return resp.json()
 
 def create_database():
     children_query_resp = make_request(
