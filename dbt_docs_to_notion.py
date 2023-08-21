@@ -41,7 +41,6 @@ def retry(exception, tries=10, delay=0.5, backoff=2):
 
     return decorator_retry
 
-@retry(HTTPError, tries=10, delay=0.5)
 def make_request(endpoint, querystring='', method='GET', **request_kwargs):
     time.sleep(0.5)  # Rate limit: 3 requests per second
     headers = {
