@@ -284,12 +284,7 @@ def create_record(database_id, model_name, data, records_written):
             }
         }
     ]
-    
-    if data['relation_name'] is not None:
-        truncated_relation_name = data['relation_name'][:2000]
-    else: 
-        truncated_relation_name = 'Unknown'
-    
+
     record_obj = {
         "parent": {
             "database_id": database_id
@@ -326,7 +321,7 @@ def create_record(database_id, model_name, data, records_written):
                 "rich_text": [
                     {
                         "text": {
-                            "content": truncated_relation_name
+                            "content": data['relation_name'][:2000]
                         }
                     }
                 ]
