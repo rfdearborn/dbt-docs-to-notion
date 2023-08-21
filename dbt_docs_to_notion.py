@@ -430,7 +430,6 @@ def get_paths_or_empty(parent_object, paths_array, zero_value=''):
 
   return zero_value
 
-
 def get_owner(data, catalog_nodes, model_name):
   """
   Check for an owner field explicitly named in the DBT Config
@@ -444,6 +443,8 @@ def get_owner(data, catalog_nodes, model_name):
   
 def main():
     model_records_to_write = sys.argv[1:]  # 'all' or list of model names
+    print(sys.argv[2:])
+    model_regex = sys.argv[1:]
     print(f'Model records to write: {model_records_to_write}')
 
     # Load nodes from dbt docs
@@ -467,7 +468,7 @@ def main():
     total_model_count = len(models)
     current_model_count = 0
     for model_name, data in sorted(models.items(), reverse=True):
-        if model_records_to_write == ['all'] or model_name in model_records_to_write or re.match(MODEL_REGEX, model_name):
+        if model_records_to_write == ['all'] or model_name in model_records_to_write or re.match(model_regex, model_name):
             create_record(database_id, model_name, data, catalog_nodes)
             current_model_count = current_model_count + 1
             print(f'{current_model_count} models processed out of { total_model_count }')

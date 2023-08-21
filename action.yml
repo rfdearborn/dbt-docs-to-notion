@@ -27,6 +27,13 @@ inputs:
   notion-token:
     description: 'Notion token api for integration to use (pass using secrets)'
     required: true
+  notion-token:
+    description: 'Notion token api for integration to use (pass using secrets)'
+    required: true
+  model-regex:
+    description: 'Optional regex for filtering model list'
+    required: false
+
 runs:
   using: 'composite'
   steps: 
