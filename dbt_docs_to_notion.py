@@ -477,6 +477,8 @@ def main():
         in manifest_nodes.items() if data['resource_type'] == 'model'
     }
 
+    print(all_models_dict)
+
     all_models_len = len(all_models_dict)
     print(f'{ all_models_len } models in dbt project')
 
