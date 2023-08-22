@@ -21,6 +21,7 @@ def models_to_write(model_select_method, all_models_dict, model_select_list = ['
     if model_select_method == 'select':
         sync_models_dict = model_select_list
     elif model_select_method == 'regex':
+        print(f'{MODEL_SELECT_REGEX} string used for select')
         sync_models_dict = {
             model_name: data for model_name, data in all_models_dict.items() if re.match(MODEL_SELECT_REGEX, model_name)
         }
@@ -457,7 +458,7 @@ def get_owner(data, catalog_nodes, model_name):
   
 def main():
 
-
+    print(f'Sync started, in { MODEL_SELECT_METHOD } select mode')
     # Load nodes from dbt docs
     with open('target/manifest.json', encoding='utf-8') as f:
         manifest = json.load(f)
@@ -473,17 +474,20 @@ def main():
         in manifest_nodes.items() if data['resource_type'] == 'model'
     }
 
+    all_models_len = len(all_models_dict)
+    print(f'{ all_models_len } models in dbt project')
+
     sync_models_dict = models_to_write(MODEL_SELECT_METHOD, all_models_dict, MODEL_SELECT_LIST, MODEL_SELECT_REGEX)
     
+    sync_models_len = len(sync_models_dict)
     # Create or update the database
     database_id = create_database()
 
-    total_model_count = len(sync_models_dict)
     current_model_count = 0
     for model_name, data in sorted(sync_models_dict.items(), reverse=True):
         create_record(database_id, model_name, data, catalog_nodes)
         current_model_count = current_model_count + 1
-        print(f'{current_model_count} models processed out of { total_model_count }')
-     
+        print(f'{current_model_count} models processed out of { sync_models_len }')
+
 if __name__ == '__main__':
     main()
