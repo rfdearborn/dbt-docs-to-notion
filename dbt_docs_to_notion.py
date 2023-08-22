@@ -23,13 +23,14 @@ def models_to_write(model_select_method, all_models_dict, model_select_list = ['
     elif model_select_method == 'regex':
         print(f'{MODEL_SELECT_REGEX} string used for select')
         model_name_pattern = re.compile(MODEL_SELECT_REGEX)
-        filtered_models_dict = {
+        sync_models_dict = {
             node_name: data
             for (node_name, data) in all_models_dict.items()
             if model_name_pattern.match(node_name)
         }
     else:
         sync_models_dict = all_models_dict
+        
     sync_models_len = len(sync_models_dict)
 
     print(f'{ sync_models_len } selected for sync')
