@@ -5,7 +5,6 @@ from requests.adapters import HTTPAdapter
 from requests.exceptions import RetryError
 from urllib3.util.retry import Retry
 import time
-import sys
 import json
 import re
 
@@ -162,10 +161,11 @@ def update_record(record_id, record_obj):
         json={"children": record_obj['children']}
     )
 
-def create_record(database_id, model_name, data, catalog_nodes, current_datetime):
+def create_record(database_id, model_name, data, catalog_nodes):
     column_descriptions = {name: metadata['description'] for name, metadata in data['columns'].items()}
     col_names_and_data = list(get_paths_or_empty(catalog_nodes, [[model_name, 'columns']], {}).items())
-
+    current_datetime = datetime.now()
+    formatted_datetime = current_datetime.strftime('%Y-%m-%d %H:%M:%S')
     columns_table_children_obj = [
         {
             "type": "table_row",
@@ -316,7 +316,7 @@ def create_record(database_id, model_name, data, catalog_nodes, current_datetime
                 "rich_text": [
                     {
                         "type": "text",
-                        "text": {"content": current_datetime}
+                        "text": {"content": formatted_datetime}
                     }
                 ]
             }
