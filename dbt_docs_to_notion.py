@@ -421,8 +421,7 @@ def create_record(database_id, model_name, data, catalog_nodes):
     except json.JSONDecodeError as e:
         print(f'Skipping {model_name} due to JSON decode error:', e)
         return  # Skip this model_name and proceed to the next one
-    
-    print("Response from API:", record_query_resp)
+
 
     if record_query_resp['results']:
         print(f'updating {model_name} record')
