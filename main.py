@@ -7,7 +7,6 @@ from utils.request_util import make_request, get_paths_or_empty
 import json
 import re
 
-
 DATABASE_PARENT_ID = os.environ['DATABASE_PARENT_ID']
 DATABASE_NAME = os.environ['DATABASE_NAME']
 NOTION_TOKEN = os.environ['NOTION_TOKEN']
