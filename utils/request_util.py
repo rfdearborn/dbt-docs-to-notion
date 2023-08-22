@@ -1,5 +1,9 @@
 import requests
 import time
+import os
+
+
+NOTION_TOKEN = os.environ['NOTION_TOKEN']
 
 def make_request(endpoint, querystring='', method='GET', **request_kwargs):
     time.sleep(0.5)  # Rate limit: 3 requests per second
