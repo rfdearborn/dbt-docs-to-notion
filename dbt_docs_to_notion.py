@@ -1,5 +1,5 @@
 import os
-import datetime
+from datetime import datetime
 import requests
 from requests.adapters import HTTPAdapter
 from requests.exceptions import RetryError
