@@ -27,7 +27,10 @@ def models_to_write(model_select_method, all_models_dict, model_select_list = ['
         }
     else:
         sync_models_dict = all_models_dict
-    return sync_models_dict
+    sync_models_len = len(sync_models_dict)
+
+    print(f'{ sync_models_len } selected for sync')
+    return sync_models_dict, sync_models_len
 
 def retry(exception, tries=10, delay=0.5, backoff=2):
     def decorator_retry(func):
@@ -477,9 +480,8 @@ def main():
     all_models_len = len(all_models_dict)
     print(f'{ all_models_len } models in dbt project')
 
-    sync_models_dict = models_to_write(MODEL_SELECT_METHOD, all_models_dict, MODEL_SELECT_LIST, MODEL_SELECT_REGEX)
-    
-    sync_models_len = len(sync_models_dict)
+    sync_models_dict, sync_models_len = models_to_write(MODEL_SELECT_METHOD, all_models_dict, MODEL_SELECT_LIST, MODEL_SELECT_REGEX)
+
     # Create or update the database
     database_id = create_database()
 
