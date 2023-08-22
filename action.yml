@@ -54,8 +54,10 @@ runs:
       run: "dbt docs generate --profiles-dir ${{ inputs.dbt-profile-path }} --target=${{ inputs.dbt-target }}"
       shell: bash
     - name: Export dbt Docs to Notion
-      run: echo "Sync step passed"
-      run: "python3 ${{ github.action_path }}/main.py ${{ inputs.model-records-to-write }}"
+      run: |
+        echo "Sync step started"
+        "python3 ${{ github.action_path }}/main.py ${{ inputs.model-records-to-write }}"
+        echo "Sync step ending"
       shell: bash
       env:
         DATABASE_NAME: ${{ inputs.notion-database-name }}
