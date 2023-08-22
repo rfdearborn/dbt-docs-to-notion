@@ -26,7 +26,7 @@ def models_to_write(model_select_method, all_models_dict, model_select_list = ['
         sync_models_dict = {
             node_name: data
             for (node_name, data) in all_models_dict.items()
-            if model_name_pattern.match(node_name)
+            if model_name_pattern.match(data['name'])
         }
     else:
         sync_models_dict = all_models_dict
