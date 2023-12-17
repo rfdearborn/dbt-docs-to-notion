@@ -69,5 +69,4 @@ jobs:
 
 ## Todo
 
-- Tests
 - Visualize models graph

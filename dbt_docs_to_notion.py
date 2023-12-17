@@ -58,8 +58,10 @@ def get_owner(data, catalog_nodes, model_name):
   return get_paths_or_empty(catalog_nodes, [[model_name, 'metadata', 'owner']], '')
 
 
-def main():
-  model_records_to_write = sys.argv[1:] # 'all' or list of model names
+def main(argv=None):
+  if argv is None:
+    argv = sys.argv
+  model_records_to_write = argv[1:] # 'all' or list of model names
   print(f'Model records to write: {model_records_to_write}')
 
   ###### load nodes from dbt docs ######
@@ -313,7 +315,7 @@ def main():
             "children": columns_table_children_obj
           }
         },
-        # Raw SQL
+        # Raw Code
         {
           "object": "block",
           "type": "heading_1",
@@ -321,7 +323,7 @@ def main():
             "rich_text": [
               {
                 "type": "text",
-                "text": { "content": "Raw SQL" }
+                "text": { "content": "Raw Code" }
               }
             ]
           }
@@ -341,7 +343,7 @@ def main():
             "language": "sql"
           }
         },
-        # Compiled SQL
+        # Compiled Code
         {
           "object": "block",
           "type": "heading_1",
@@ -349,7 +351,7 @@ def main():
             "rich_text": [
               {
                 "type": "text",
-                "text": { "content": "Compiled SQL" }
+                "text": { "content": "Compiled Code" }
               }
             ]
           }
@@ -508,6 +510,7 @@ def main():
           method='POST',
           json=record_obj
         )
+
 
 if __name__ == '__main__':
   main()
