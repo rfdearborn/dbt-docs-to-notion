@@ -1,4 +1,5 @@
 # Mock Data for dbt and Notion API
+import os
 
 # Mock dbt Data
 DBT_MOCK_CATALOG = {
@@ -56,7 +57,7 @@ NOTION_MOCK_EXISTENT_CHILD_PAGE_QUERY = {
     {
       "id": "mock_child_id",
       "child_database": {
-        "title": "dbt Models",
+        "title": os.environ['DATABASE_NAME'],
       },
     },
   ],
