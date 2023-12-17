@@ -33,7 +33,7 @@ class TestDbtDocsToNotionIntegration(unittest.TestCase):
       self.assertEqual(title['text']['content'], os.environ['DATABASE_NAME'])
       parent = database_obj['parent']
       self.assertEqual(parent['type'], 'page_id')
-      self.assertIsInstance(parent['page_id'], str)
+      self.assertEqual(parent['page_id'], os.environ['DATABASE_PARENT_ID'])
       properties = database_obj['properties']
       self.assertEqual(properties['Name'], {'title': {}})
       self.assertEqual(properties['Description'], {'rich_text': {}})

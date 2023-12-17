@@ -9,7 +9,10 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    env:
+      DATABASE_NAME: 'mock_database_name'
+      DATABASE_PARENT_ID: 'mock_database_parent_id'
+      NOTION_TOKEN: 'mock_notion_token'
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python 3.7
