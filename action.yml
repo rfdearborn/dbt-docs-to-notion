@@ -11,6 +11,10 @@ inputs:
     description: 'where profile.yml lives'
     required: false
     default: './'
+  dbt-project-path:
+    description: 'where dbt_project.yml lives'
+    required: false
+    default: './'
   dbt-target:
     description: 'profile target to use for dbt docs generation'
     required: true
@@ -38,13 +42,13 @@ runs:
       run: "pip3 install ${{ inputs.dbt-package }}"
       shell: bash
     - name: Load dbt deps
-      run: "dbt deps --profiles-dir ${{ inputs.dbt-profile-path }} --target=${{ inputs.dbt-target }}"
+      run: "dbt deps --project-dir ${{ inputs.dbt-project-path }} --profiles-dir ${{ inputs.dbt-profile-path }} --target=${{ inputs.dbt-target }}"
       shell: bash
     - name: Generate dbt Docs
-      run: "dbt docs generate --profiles-dir ${{ inputs.dbt-profile-path }} --target=${{ inputs.dbt-target }}"
+      run: "dbt docs generate --project-dir ${{ inputs.dbt-project-path }} --profiles-dir ${{ inputs.dbt-profile-path }} --target=${{ inputs.dbt-target }}"
       shell: bash
     - name: Export dbt Docs to Notion
-      run: "python3 ${{ github.action_path }}/dbt_docs_to_notion.py ${{ inputs.model-records-to-write }}"
+      run: "python3 ${{ github.action_path }}/dbt_docs_to_notion.py ${{ inputs.dbt-project-path }} ${{ inputs.model-records-to-write }}"
       shell: bash
       env:
         DATABASE_NAME: ${{ inputs.notion-database-name }}
