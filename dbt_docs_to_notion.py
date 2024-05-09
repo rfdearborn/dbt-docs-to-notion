@@ -412,7 +412,7 @@ def main(argv=None):
             "rich_text": [
               {
                 "text": {
-                  "content": data['relation_name'][:2000]
+                  "content": data['relation_name'][:2000] if 'relation_name' in data else ""
                 }
               }
             ]
