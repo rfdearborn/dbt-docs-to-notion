@@ -152,7 +152,7 @@ def main(argv=None):
 
   ##### create / update database records #####
   for model_name, data in sorted(list(models.items()), reverse=True):
-    if model_records_to_write == ['all'] or model_name in model_records_to_write:
+    if model_records_to_write == ['all'] or model_name.split(".")[-1] in model_records_to_write:
       # form record object
       column_descriptions = {name: metadata['description']
                             for name, metadata
