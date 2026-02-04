@@ -61,6 +61,7 @@ jobs:
         with:
           dbt-package: 'dbt-bigquery==1.0.0'
           dbt-profile-path: './'
+          dbt-project-path: './'
           dbt-target: 'github_actions'
           model-records-to-write: "all"
           notion-database-name: 'dbt Models'

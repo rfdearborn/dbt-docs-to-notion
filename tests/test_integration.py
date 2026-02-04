@@ -127,7 +127,7 @@ class TestDbtDocsToNotionIntegration(unittest.TestCase):
               return NOTION_MOCK_RECORD_CREATE
         mock_make_request.side_effect = _mocked_make_request
 
-        main(argv=[None, 'all'])
+        main(argv=[None, 'dbt_project_dir', 'all'])
 
         self.assertEqual(
           self.recorded_requests,
@@ -159,7 +159,7 @@ class TestDbtDocsToNotionIntegration(unittest.TestCase):
               return {} # response is thrown away
         mock_make_request.side_effect = _mocked_make_request
 
-        main(argv=[None, 'all'])
+        main(argv=[None, 'dbt_project_dir', 'all'])
 
         self.assertEqual(
           self.recorded_requests,
