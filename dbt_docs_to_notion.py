@@ -61,8 +61,13 @@ def get_owner(data, catalog_nodes, model_name):
 def main(argv=None):
   if argv is None:
     argv = sys.argv
-  dbt_project_dir = argv[1]
-  model_records_to_write = argv[2:] # 'all' or list of model names
+  if len(argv) > 2:
+    dbt_project_dir = argv[1]
+    model_records_to_write = argv[2:]
+  else:
+    dbt_project_dir = './'
+    model_records_to_write = argv[1:]
+    print(f'No project dir specified, defaulting to {dbt_project_dir}')
   print(f'Model records to write: {model_records_to_write}')
 
   ###### load nodes from dbt docs ######
