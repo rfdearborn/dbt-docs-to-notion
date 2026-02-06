@@ -65,7 +65,7 @@ def main(argv=None):
     dbt_project_dir = argv[1]
     model_records_to_write = argv[2:]
   else:
-    dbt_project_dir = './'
+    dbt_project_dir = '.'
     model_records_to_write = argv[1:]
     print(f'No project dir specified, defaulting to {dbt_project_dir}')
   print(f'Model records to write: {model_records_to_write}')

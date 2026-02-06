@@ -51,6 +51,41 @@ DBT_MOCK_MANIFEST = {
   },
 }
 
+DBT_MOCK_CATALOG_MULTI = {
+  "nodes": {
+    "model.test.model_1": DBT_MOCK_CATALOG["nodes"]["model.test.model_1"],
+    "model.test.model_2": {
+      "columns": {},
+      "metadata": {"owner": "owner2@example.com"},
+      "stats": {
+        "row_count": {"value": 5},
+        "bytes": {"value": 2000000},
+      },
+    },
+  },
+}
+
+DBT_MOCK_MANIFEST_MULTI = {
+  "nodes": {
+    "model.test.model_1": DBT_MOCK_MANIFEST["nodes"]["model.test.model_1"],
+    "model.test.model_2": {
+      "resource_type": "model",
+      "columns": {},
+      "raw_code": "SELECT 2",
+      "compiled_code": "SELECT 2",
+      "name": "model_2",
+      "description": "Description for model 2",
+      "relation_name": "model.test.model_2",
+      "depends_on": [],
+      "tags": [],
+    },
+    "test.test.test_1": {
+      "resource_type": "test",
+      "name": "test_1",
+    },
+  },
+}
+
 # Mock Notion API Responses
 NOTION_MOCK_EXISTENT_CHILD_PAGE_QUERY = {
   "results": [
