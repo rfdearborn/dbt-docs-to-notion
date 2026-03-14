@@ -58,6 +58,16 @@ def get_owner(data, catalog_nodes, model_name):
   return get_paths_or_empty(catalog_nodes, [[model_name, 'metadata', 'owner']], '')
 
 
+def variable_rich_text_length(data):
+    """
+    Check length of Rich text block and format into =<2000 character sections
+    """
+    return [
+            {"type": "text", "text": {"content": data[n:n+2000]}}
+            for n in range(0, len(data), 2000)
+    ]
+
+
 def main(argv=None):
   if argv is None:
     argv = sys.argv
@@ -338,14 +348,7 @@ def main(argv=None):
           "object": "block",
           "type": "code",
           "code": {
-            "rich_text": [
-              {
-                "type": "text",
-                "text": {
-                  "content": data['raw_code'][:2000] if 'raw_code' in data else data['raw_sql'][:2000]
-                }
-              }
-            ],
+            "rich_text": variable_rich_text_length(data.get("raw_code") or data.get("raw_sql", "")),
             "language": "sql"
           }
         },
@@ -366,14 +369,7 @@ def main(argv=None):
           "object": "block",
           "type": "code",
           "code": {
-            "rich_text": [
-              {
-                "type": "text",
-                "text": {
-                  "content": data['compiled_code'][:2000] if 'compiled_code' in data else data['compiled_sql'][:2000]
-                }
-              }
-            ],
+            "rich_text": variable_rich_text_length(data.get("compiled_code") or data.get("compiled_sql", "")),
             "language": "sql"
           }
         }
